@@ -1,0 +1,44 @@
+pragma solidity >=0.8.2 <0.9.0
+
+contract multiSig{
+
+    address[] public owners;
+    uint public confirmations;
+
+
+    struct Transaction{
+
+        address to;
+        uint value;
+        bool  executed;
+    }
+
+    mapping(uint => mapping(address=>bool) )isConfirmed;
+
+    Transactions[] public transactions;        // array to store all our trans
+
+    event TransactionSubmitted(uint transactionId, address)
+
+    constructor(address[] memory _owners, uint _confirmations){
+        require(_owners.length > 1, "owners required must be greater than 1");
+        require(_confirmations > 0  && _confirmations < owners.length, "no. of confirmations are not in sync with owners" );
+
+        for(uint i=0 ; i< owners.length; i++){
+            require(_owners[i]!= address(0), "Invalid owner");  // check whether address of owners are valid or not
+
+            // if owner is valid pushing it to our array
+            owners.push(_owners[i]);
+        }
+        confirmations =_confirmations;
+    }
+
+    function submitTransaction(address _to) public payable{
+        require(_to!= address(0), "invalid address of receiver");
+        require(msg.value >0 , "transfer amount must be greater than 0");
+
+        uint transactionId = transactions.length;
+
+        transactions.push(Transactions{to: _to,  value: msg.value , executed: false} );
+        
+        }
+}

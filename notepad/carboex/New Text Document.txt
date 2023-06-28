@@ -1,0 +1,194 @@
+1ST
+===================================
+
+const { expect } = require('chai');
+const { ethers } = require('hardhat');
+const { time, BN } = require('@openzeppelin/test-helpers');
+
+describe('Dao', function () {
+  let dao;
+  let token;
+  let company;
+  let owner;
+  let member1;
+  let member2;
+
+  beforeEach(async function () {
+    const Dao = await ethers.getContractFactory('Dao');
+    dao = await Dao.deploy();
+
+    const NewToken = await ethers.getContractFactory('NewToken');
+    token = await NewToken.deploy();
+
+    const Company = await ethers.getContractFactory('Company');
+    company = await Company.deploy();
+
+    [owner, member1, member2] = await ethers.getSigners();
+
+    await dao.setTokenAddress(token.address);
+    await dao.setCompanyAddress(company.address);
+    await token.transfer(member1.address, 1000);
+    await token.transfer(member2.address, 2000);
+  });
+
+  it('should create a proposal', async function () {
+    const description = 'Proposal 1';
+    const image = 'https://example.com/proposal1.jpg';
+    const proposalValue = 100;
+    const proposalStake = 1000000000000000;
+
+    await dao.connect(member1).createProposal(description, image, true, proposalValue, { value: proposalStake });
+
+    const proposal = await dao.getProposal(1);
+	
+    expect(proposal.description).to.equal(description);
+    expect(proposal.image).to.equal(image);
+    expect(proposal.value).to.equal(proposalValue);
+    expect(proposal.creator).to.equal(member1.address);
+    expect(proposal.status).to.equal('');
+  });
+
+  it('should upvote a proposal', async function () {
+    const proposalStake = 1000000000000000;
+    const votingStake = 100000000000000;
+
+    await dao.connect(member1).createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+    await dao.connect(member2).upvote(1, { value: votingStake });
+
+    const proposal = await dao.getProposal(1);
+
+    expect(proposal.upvote).to.equal(1);
+    expect(proposal.upvoters).to.have.lengthOf(1);
+    expect(proposal.upvoters[0]).to.equal(member2.address);
+  });
+
+  it('should get proposal result', async function () {
+    const proposalStake = 1000000000000000;
+    const votingStake = 100000000000000;
+
+    await dao.connect(member1).createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+    await dao.connect(member2).upvote(1, { value: votingStake });
+    await time.increase(time.duration.days(2));
+
+    const result = await dao.getProposalResult(1);
+
+    expect(result).to.equal('Accept');
+  });
+});
+
+
+
+====================================================
+
+const { expect } = require('chai');
+const { ethers } = require('hardhat');
+
+describe('Dao', function () {
+  let dao;
+  let owner;
+  let member;
+  let votingStake = 100000000000000;
+
+  beforeEach(async function () {
+    const Dao = await ethers.getContractFactory('Dao');
+    dao = await Dao.deploy();
+
+    [owner, member] = await ethers.getSigners();
+
+    // Add member to the DAO
+    await dao.addmember({ value: votingStake });
+  });
+
+  it('should allow a member to upvote a proposal', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Upvote the proposal
+    await dao.connect(member).upvote(proposalId, { value: votingStake });
+
+    // Get the proposal details
+    const proposal = await dao.getProposal(proposalId);
+
+    expect(proposal.upvote).to.equal(1);
+    expect(proposal.upvoters).to.have.lengthOf(1);
+    expect(proposal.upvoters[0]).to.equal(member.address);
+  });
+
+  it('should not allow a non-member to upvote a proposal', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Try to upvote the proposal as a non-member
+    await expect(dao.connect(owner).upvote(proposalId, { value: votingStake })).to.be.revertedWith(
+      'You are not a member of DAO'
+    );
+  });
+
+  it('should not allow the proposal creator to upvote the proposal', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Try to upvote the proposal as the proposal creator
+    await expect(dao.connect(member).upvote(proposalId, { value: votingStake })).to.be.revertedWith(
+      'You are a proposal creator so you cannot vote'
+    );
+  });
+
+  it('should not allow a member to upvote the same proposal twice', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Upvote the proposal
+    await dao.connect(member).upvote(proposalId, { value: votingStake });
+
+    // Try to upvote the same proposal again
+    await expect(dao.connect(member).upvote(proposalId, { value: votingStake })).to.be.revertedWith(
+      'You have already voted'
+    );
+  });	
+
+  it('should not allow upvoting after the proposal voting period has ended', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal with a short voting period
+    await dao.setVotingTimePeriod(1); // 1 second
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Wait for the voting period to end
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Try to upvote the proposal after the voting period has ended
+    await expect(dao.connect(member).upvote(proposalId, { value: votingStake })).to.be.revertedWith(
+      'Voting time ended'
+    );
+  });
+
+  it('should require the correct voting stake to upvote a proposal', async function () {
+    const proposalId = 1;
+    const proposalStake = 1000000000000000;
+
+    // Create a proposal
+    await dao.createProposal('Proposal 1', '', true, 100, { value: proposalStake });
+
+    // Try to upvote the proposal with an incorrect voting stake
+    await expect(dao.connect(member).upvote(proposalId, { value: 123 })).to.be.revertedWith(
+      'Your Voting Stake is Low'
+    );
+  });
+});
+
+
+===========================================

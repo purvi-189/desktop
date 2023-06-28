@@ -1,0 +1,38 @@
+
+It's important to recognize that when we make a change to a state variable on a deployed smart contract, we are modifying permanent storage on the blockchain.
+
+ Remember from our lessons on Ethereum that permanent storage on the blockchain is stored in Patricia Merkle Tries on every Ethereum Full Node. 
+
+A view cannot write to storage. 
+
+The keyword pure means this function does not read or write storage. It is function completely independent from contract state. But again, the function above is not really useful at all...
+
+A more useful pure function would be one that returns something.
+
+--------------------------------------------------
+
+JSON-RPC (JavaScript Object Notation Remote Procedure Call) is a protocol that enables the communication between client and server applications.
+It uses JSON to encode data and transmit it over HTTP, making it lightweight and simple to understand and implement.
+JSON-RPC is a remote procedure call (RPC) protocol. It allows you to call functions directly on the server.
+
+Queries, on the other hand, do not incur any gas cost as they do not modify state and will only be run by the single node responding to the query.
+
+public / external
+-----------------
+Public visibility requires more gas because it can be called externally and internally, which complicates the assembly code.
+
+
+------
+Internsl - called by main contract and derived contracts
+private - main contract
+external -can only be called from a third party
+public function can be called from all potential parties
+
+public - any contract and account can call
+private - only inside the contract that defines the function
+internal- only inside contract that inherits an internal function
+external - only other contracts and accounts can call	
+
+View function declares that no state will be changed.
+Pure function declares that no state variable will be changed or read.
+

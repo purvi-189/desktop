@@ -1,0 +1,12 @@
+echo "# 12" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/purvi-189/12.git
+git push -u origin main
+
+
+git remote add origin https://github.com/purvi-189/Alchemy-week2.git
+git branch -M main
+git push -u origin main

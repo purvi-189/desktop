@@ -1,0 +1,55 @@
+const { ethers } = require('ethers');
+const { assert } = require('chai');
+
+describe("Dao", function () {
+    let dao ;
+    let owner;
+    let member1;
+    let member2;
+    let votingStake = 100000000000000;
+    let company;
+    let token;
+
+    before(async function () {
+        const Dao = await ethers.getContractFactory("Dao");
+        dao = await Dao.deploy();
+        await dao.deployed();
+    
+        const Company = await ethers.getContractFactory("Company");
+        company = await Company.deploy();
+        await company.deployed();
+    
+        const NewToken = await ethers.getContractFactory("NewToken");
+        token = await NewToken.deploy();
+        await token.deployed();
+
+        [owner, member1, member2] = await ethers.getSigners();
+
+        await dao.setTokenAddress(token.address);
+        await dao.setCompanyAddress(company.address);
+
+        await token.transfer(member1.address, 1000);
+        await token.transfer(member2.address, 2000);
+      });
+
+
+      it('should create a proposal', async function () {
+        const description = 'Proposal 1';
+        const image = 'Image 1';
+        const proposalValue = 100;
+        const proposalStake = 1000000000000000;
+        await dao.connect(member1).createProposal(description, image, true, proposalValue, { value: proposalStake });
+
+        const proposal = await dao.getProposal(1);
+
+        expect(proposal.description).to.equal(description);
+        expect(proposal.image).to.equal(image);
+        expect(proposal.value).to.equal(proposalValue);
+        expect(proposal.creator).to.equal(member1.address);
+        expect(proposal.status).to.equal('');
+
+
+
+
+
+

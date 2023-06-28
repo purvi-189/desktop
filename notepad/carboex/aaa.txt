@@ -1,0 +1,60 @@
+DATA FOR PPT
+
+=======================
+
+Vision:
+Our vision is to empower individuals and teams to effortlessly create and share video content through our app, while providing seamless integration with Lighthouse, a popular video hosting platform. 
+
+Mission:
+Our mission is to develop an intuitive and feature-rich app that simplifies the video creation and uploading process, allowing users to effortlessly record, edit, and share videos 
+
+=====================
+What is VidWeave ?
+
+VidWeave is a  modern tool that helps to record and upload video to Lighthouse. It has easy to use interface. Its intuitive design ensures a seamless recording and sharing experience. One can captures screen and create video. The recorded videos can be shared with others by generating a unique URL. 
+Our app facilitates efficient and effective video-creation with the help of screen recording.
+
+=============
+
+Differnce in web2 and web3
+
+--> web2
+Web2 refers to the current generation of the internet, where most applications and services are centralized and controlled by a single entity. Web2 version of app like VidWeave  allows users to record videos directly on their devices and then upload them to the servers of the app for storage and sharing.
+
+--> web 3
+Web3 refers to the next generation of the internet, which is built on decentralized technologies like blockchain. VidWeave is created with blockchain technologies, in this the video recording process can be similar, but instead of uploading the video to a centralized server of app, it would be uploaded to a decentralized storage network like LightHouse or IPFS.
+
+-------------------------
+Advantages over an app created with web2
+
+1. Decentralization: Web3 apps built on lighthouse and other decentralized technologies offer a more decentralized infrastructure compared to Web2 apps. One doesn't have to rely on single server.
+
+2. Data ownership and control: users have more control and ownership over their data, including the videos they record.
+
+3. Improved security: Decentralized storage networks, such as lighthouse, can provide enhanced security for video content. 
+
+4.Transparency and auditability: Since the data stored on lighthouse is immutable and timestamped using blockchain technology, it becomes easier to verify the authenticity and integrity of the videos. 
+
+==============
+
+--> Sponsors
+--> Flow
+-->
+
+//////////////////////future scopes
+-- Enhanced Video Editing: in the next version we want to extend our app's video editing capabilities, providing users with more advanced editing tools and features like animation, 
+filter, transitions, crop etc.
+
+--Collaborative Video Creation: Enable collaboration features that allow multiple users to work together on video projects. This could involve real-time editing, commenting.
+
+--Integration with Cloud Storage Platforms: Integrate the app with popular cloud storage platforms like Google Drive, Dropbox, or Microsoft OneDrive. This would provide users with seamless access to their video files across multiple devices.
+
+
+///
+So, let your ideas flow and creativity bloom,
+With Loom, the revolutionary video messaging app in tune.
+Connect and engage, share knowledge and inspire,
+With every Loom recording, your communication will acquire.
+//////
+
+

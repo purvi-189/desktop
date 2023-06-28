@@ -1,0 +1,34 @@
+async function setUserFromDifferentAccount() {
+  // Get the accounts from Hardhat
+  const [deployer, account2, account3] = await ethers.getSigners();
+
+  // Get the deployed contract instance
+  const contractAddress = "<your_contract_address>";
+  const Contract = await ethers.getContractFactory("<YourContract>");
+  const contract = await Contract.attach(contractAddress);
+
+  // Define the new contract address and ABI
+  const otherContractAddress = "<other_contract_address>";
+  const otherContractABI = "<other_contract_abi>";
+
+  // Connect to the other contract
+  const otherContract = await ethers.getContractAt(otherContractABI, otherContractAddress);
+
+  // Parameters for setUser function
+  const name = "User 1";
+  const username = "user1";
+  const email = "user1@gmail.com";
+  const company = "Company 1";
+  const country = "Country 1";
+  const image = "Image 1";
+
+  // Call setUser from account2
+  const setUserTx = await contract.connect(account2).setUser(name, username, email, company, country, image);
+  await setUserTx.wait();
+
+  // Call setUser from the other contract
+  const setUserTx3 = await otherContract.setUser(name, username, email, company, country, image);
+  await setUserTx3.wait();
+}
+
+setUserFromDifferentAccount();

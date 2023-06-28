@@ -1,0 +1,73 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import { expect } from "chai";
+import { ethers } from "hardhat";
+
+describe("NewToken", function () {
+  let NewToken;
+  let newToken;
+  let owner;
+  let addr1;
+  let addr2;
+
+  const SUPPLY = ethers.utils.parseEther("1000");
+
+  beforeEach(async function () {
+    [owner, addr1, addr2] = await ethers.getSigners();
+
+    NewToken = await ethers.getContractFactory("NewToken");
+    newToken = await NewToken.deploy(SUPPLY);
+    await newToken.deployed();
+  });
+
+  it("should have correct name, symbol, and total supply", async function () {
+    expect(await newToken.name()).to.equal("New Token");
+    expect(await newToken.symbol()).to.equal("NT");
+    expect(await newToken.totalSupply()).to.equal(SUPPLY);
+  });
+
+  it("should mint tokens", async function () {
+    const mintAmount = ethers.utils.parseEther("50");
+
+    await newToken.connect(owner).mintFifty(mintAmount);
+
+    expect(await newToken.balanceOf(owner.address)).to.equal(SUPPLY.add(mintAmount));
+  });
+
+  it("should transfer tokens", async function () {
+    const transferAmount = ethers.utils.parseEther("10");
+
+    await newToken.transfer(addr1.address, transferAmount);
+
+    expect(await newToken.balanceOf(addr1.address)).to.equal(transferAmount);
+  });
+
+  it("should allow owner to withdraw tokens from the contract", async function () {
+    const withdrawAmount = ethers.utils.parseEther("100");
+    const initialBalance = await newToken.balanceOf(newToken.address);
+
+    await newToken.connect(owner).withdrawFromContract(withdrawAmount, newToken.address);
+
+    expect(await newToken.balanceOf(newToken.address)).to.equal(initialBalance.sub(withdrawAmount));
+    expect(await newToken.balanceOf(owner.address)).to.equal(withdrawAmount);
+  });
+
+  it("should allow owner to set the token price", async function () {
+    const newTokenPrice = 20000000000000; // 1 token = 0.00002 Ether
+
+    await newToken.connect(owner).settokenprice(newTokenPrice);
+
+    expect(await newToken.gettokenPrice()).to.equal(newTokenPrice);
+  });
+
+  it("should allow owner to set the admin address", async function () {
+    const newAdmin = addr1.address;
+
+    await newToken.connect(owner).setadmin(newAdmin);
+
+    expect(await newToken.admin()).to.equal(newAdmin);
+  });
+});

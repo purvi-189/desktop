@@ -1,0 +1,29 @@
+
+ it("should revert if order has already been filled", async function () {
+    const orderId = 1;
+    const sellCredit = 100;
+    const expectedTotalPrice = sellCredit * creditPrice;
+    // Create the order and mark it as filled
+    await company.connect(owner).createOrder(sellCredit, creditPrice, creditToken.address);
+    await company.connect(user1).buycredit(orderId, { value: expectedTotalPrice });
+
+    // Try to buy the credit from the same order again
+    await expect(company.connect(user2).buycredit(orderId, { value: expectedTotalPrice }))
+      .to.be.revertedWith("Order does not exist or has been filled");
+  });
+/////////////
+
+
+ it("should revert if incorrect amount of Ether is sent", async function () {
+  const orderId = 1;
+  const sellCredit = 100;
+  const creditPrice=2;
+  const expectedTotalPrice = sellCredit * creditPrice;
+
+  // Create the order
+  await company.connect(user1).createOrder(sellCredit, creditPrice, creditToken.address);
+  
+  // Try to buy the credit with an incorrect amount of Ether
+  await expect(company.connect(user1).buycredit(orderId, { value: expectedTotalPrice - 1 }))
+    .to.be.revertedWith("Not enough amount");
+});

@@ -1,0 +1,43 @@
+Virtual
+A function that allows an inheriting contract to override its behavior will be marked at virtual
+
+Override
+The function that overrides that base function is marked as override
+
+Pure
+A function that doesn't read or modify the variables of the state is called a pure function. It can only use local variables that are declared in the function and the arguments that are passed to the function to compute or return a value.
+
+===========
+virtual Keyword
+A function that is going to be overriden by a child contract must be declared as virtual:
+
+function foo() public pure virtual returns (uint) {
+    return 10;
+}
+
+--------- 
+override Keyword
+A function that is going to override a parent function must use the keyword override:
+
+function foo() public pure override returns (uint) {
+    return 15;
+}
+
+====> virtual fun can be overridden
+
++++++++++++++++++++
+
+Inheritance
+Solidity supports multiple inheritance. Contracts can inherit other contract by using the is keyword.
+	
+Function that is going to be overridden by a child contract must be declared as virtual.
+
+Function that is going to override a parent function must use the keyword override.
+
+Order of inheritance is important.
+
++++++++++++++++++++++++++++++++++
+
+
+TOKEN
+
